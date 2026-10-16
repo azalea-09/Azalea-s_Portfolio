@@ -51,8 +51,12 @@ export function SmoothScroll() {
         } else if (id === "#work") {
           const content = el.querySelector<HTMLElement>("[data-work-content]");
           content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
+        } else if (id === "#skills") {
+          const content = el.querySelector<HTMLElement>("[data-skills-content]");
+          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
         } else if (id === "#contact") {
-          lenis.scrollTo(lenis.limit, { duration: 1.4 });
+          const content = el.querySelector<HTMLElement>("[data-contact-content]");
+          content ? scrollToCenter(content, 0.45) : lenis.scrollTo(el, { offset: -60, duration: 1.4 });
         } else {
           scrollToCenter(el as HTMLElement);
         }
@@ -80,20 +84,22 @@ export function Reveal({
   delay = 0,
   y = 32,
   className = "",
-  amount = 0.25,
+  amount = 0.2,
+  once = true,
 }: {
   children: ReactNode;
   delay?: number;
   y?: number;
   className?: string;
   amount?: number;
+  once?: boolean;
 }) {
   return (
     <motion.div
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount }}
+      viewport={{ once, amount }}
       transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
@@ -106,11 +112,13 @@ export function MaskLines({
   className = "",
   delay = 0,
   as: Tag = "h2",
+  once = true,
 }: {
   lines: string[];
   className?: string;
   delay?: number;
   as?: keyof React.JSX.IntrinsicElements;
+  once?: boolean;
 }) {
   const MotionTag = motion[Tag as keyof typeof motion] as any;
   return (
@@ -118,13 +126,13 @@ export function MaskLines({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.3 }}
+      viewport={{ once, amount: 0.2 }}
       variants={{
         visible: { transition: { staggerChildren: 0.1, delayChildren: delay } },
       }}
     >
       {lines.map((line, i) => (
-        <span key={i} className="block overflow-hidden">
+        <span key={i} className="block overflow-hidden pb-1">
           <motion.span
             className="block"
             variants={{
@@ -144,10 +152,12 @@ export function WordReveal({
   text,
   className = "",
   delay = 0,
+  once = true,
 }: {
   text: string;
   className?: string;
   delay?: number;
+  once?: boolean;
 }) {
   const words = text.split(" ");
   return (
@@ -155,7 +165,7 @@ export function WordReveal({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.3 }}
+      viewport={{ once, amount: 0.2 }}
       variants={{
         visible: { transition: { staggerChildren: 0.04, delayChildren: delay } },
       }}
@@ -182,22 +192,24 @@ export function StaggerReveal({
   stagger = 0.09,
   delay = 0,
   amount = 0.15,
+  once = true,
 }: {
   children: ReactNode;
   className?: string;
   stagger?: number;
   delay?: number;
   amount?: number;
+  once?: boolean;
 }) {
   return (
     <motion.div
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount }}
+      viewport={{ once, amount }}
       variants={{
         visible: { transition: { staggerChildren: stagger, delayChildren: delay } },
-        hidden:  { transition: { staggerChildren: stagger / 2, staggerDirection: -1 } },
+        hidden:  { transition: { staggerChildren: stagger / 2 } },
       }}
     >
       {children}

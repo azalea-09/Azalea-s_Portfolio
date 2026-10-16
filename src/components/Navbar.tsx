@@ -18,7 +18,14 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      const isAtBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 120;
+      if (isAtBottom) {
+        setActiveSection("contact");
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
@@ -32,6 +39,8 @@ export function Navbar() {
           ? "[data-about-content]"
           : id === "work"
             ? "[data-work-content]"
+            : id === "skills"
+              ? "[data-skills-content]"
             : id === "contact"
               ? "[data-contact-content]"
             : null;
@@ -46,7 +55,7 @@ export function Navbar() {
           }
         },
         {
-          rootMargin: "-20% 0px -60% 0px",
+          rootMargin: "-20% 0px -50% 0px",
           threshold: 0,
         }
       );
