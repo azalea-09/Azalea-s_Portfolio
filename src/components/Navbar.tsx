@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
+import { Moon, Sun } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "about", label: "About" },
@@ -17,35 +18,39 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Scroll indicator (pill background / shadow)
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    // Intersection Observer — fires reliably regardless of Lenis smooth scroll
     const observers: IntersectionObserver[] = [];
 
     NAV_ITEMS.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (!el) return;
+      const contentSelector =
+        id === "about"
+          ? "[data-about-content]"
+          : id === "work"
+            ? "[data-work-content]"
+            : id === "contact"
+              ? "[data-contact-content]"
+            : null;
+      const observedEl = contentSelector ? el.querySelector(contentSelector) ?? el : el;
 
       const obs = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
             setActiveSection(id);
           } else {
-            // Clear active if this section leaves AND it was the active one
             setActiveSection((prev) => (prev === id ? "" : prev));
           }
         },
         {
-          // Section must scroll past the top 40% of the viewport before activating.
-          // The large negative bottom margin means it deactivates before it fully leaves.
-          rootMargin: "-40% 0px -55% 0px",
+          rootMargin: "-20% 0px -60% 0px",
           threshold: 0,
         }
       );
-      obs.observe(el);
+      obs.observe(observedEl);
       observers.push(obs);
     });
 
@@ -66,7 +71,7 @@ export function Navbar() {
           }`}
           aria-label="Main Navigation"
         >
-          {/* Brand Logo */}
+
           <a
             href="#hero"
             className="flex items-center gap-2 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7C39] rounded-full pr-2"
@@ -76,7 +81,7 @@ export function Navbar() {
             </span>
           </a>
 
-          {/* Desktop Navigation Links */}
+
           <ul className="hidden md:flex items-center gap-1 list-none bg-black/5 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/5 font-sans">
             {NAV_ITEMS.map((item) => {
               const isActive = activeSection === item.id;
@@ -97,18 +102,22 @@ export function Navbar() {
             })}
           </ul>
 
-          {/* Right Controls */}
+
           <div className="flex items-center gap-2">
-            {/* Theme Toggle Button */}
+
             <button
               onClick={toggle}
               aria-label="Toggle theme"
               className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 flex items-center justify-center text-sm md:text-base hover:bg-black/10 dark:hover:bg-white/20 transition-all hover:rotate-12 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7C39]"
             >
-              {theme === "dark" ? "☀️" : "🌙"}
+              {theme === "dark" ? (
+                <Sun aria-hidden="true" size={17} strokeWidth={2} className="text-amber-400" />
+              ) : (
+                <Moon aria-hidden="true" size={17} strokeWidth={2} className="text-indigo-500 dark:text-indigo-300" />
+              )}
             </button>
 
-            {/* Mobile Menu Hamburger Button */}
+
             <button
               className="md:hidden flex flex-col justify-center items-center w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 gap-1.5 cursor-pointer"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -122,7 +131,7 @@ export function Navbar() {
         </nav>
       </header>
 
-      {/* Mobile Drawer */}
+
       {menuOpen && (
         <div className="fixed inset-0 top-16 z-40 bg-background/95 dark:bg-[#1C1E20]/95 backdrop-blur-2xl flex flex-col p-8 md:hidden animate-in fade-in slide-in-from-top-4 duration-200 font-sans">
           <div className="mb-4">

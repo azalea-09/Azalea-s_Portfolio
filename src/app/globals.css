@@ -49,12 +49,12 @@
 }
 
 :root {
-  /* ── Azalea refined darker forest green palette ── */
+
   --az-green-dark:  #244015;
   --az-green-mid:   #3D682B;
   --az-green-light: #52833F;
 
-  --background: #F8F9FA;   /* soft light gray */
+  --background: #F8F9FA;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -89,8 +89,8 @@
 }
 
 .dark {
-  --background: #1C1E20;  /* sleek modern dark grey */
-  --foreground: #F0F2F5;   /* crisp light grey/white */
+  --background: #1C1E20;
+  --foreground: #F0F2F5;
   --card: #24272A;
   --card-foreground: #F0F2F5;
   --popover: #24272A;

@@ -9,7 +9,8 @@ export function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-28 px-6 md:px-16 text-center">
+    <section id="contact" className="mt-20 md:mt-28 pt-28 pb-40 md:pb-56 px-6 md:px-16 text-center">
+      <div data-contact-content="true">
       <Reveal y={16}>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-4 flex items-center justify-center gap-2">
           <span className="block w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> Contact
@@ -49,6 +50,7 @@ export function Contact() {
           </motion.a>
         ))}
       </StaggerReveal>
+      </div>
 
       <Reveal delay={0.2} y={20}>
         <div className="text-5xl mt-20 animate-bounce">🐱</div>

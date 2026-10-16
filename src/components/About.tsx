@@ -13,9 +13,9 @@ export function About() {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <section id="about" className="py-24 md:py-32 px-6 md:px-16 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        {/* Left Column (7 cols) */}
+    <section id="about" className="pt-56 md:pt-72 pb-24 md:pb-32 px-6 md:px-16 max-w-7xl mx-auto">
+      <div data-about-content="true" className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
         <div className="lg:col-span-7 flex flex-col justify-center">
           <Reveal delay={0} y={16}>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-4 flex items-center gap-2">
@@ -23,7 +23,7 @@ export function About() {
             </p>
           </Reveal>
 
-          {/* Signature mask-lines heading */}
+
           <MaskLines
             lines={["Hello, I'm", "Azalea 🌸"]}
             className="font-[family-name:var(--font-display)] text-5xl md:text-6xl font-semibold mb-6 leading-tight"
@@ -55,7 +55,7 @@ export function About() {
           </StaggerReveal>
         </div>
 
-        {/* Right Column (5 cols) — vintage photo card */}
+
         <div className="lg:col-span-5 flex justify-center w-full">
           <Reveal delay={0.15} y={30} className="w-full max-w-md">
             <div className="relative rounded-2xl border-2 border-[#4A7C39]/40 bg-card p-5 sm:p-7 shadow-[6px_6px_0_#244015]">
@@ -64,7 +64,7 @@ export function About() {
                 Hello
               </span>
 
-              {/* Photo Space Container */}
+
               <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-[#4A7C39]/25 bg-[#4A7C39]/5 mb-5 group flex items-center justify-center">
                 {!imageError ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -85,7 +85,7 @@ export function About() {
                 )}
               </div>
 
-              {/* Quote & Tag */}
+
               <blockquote className="font-[family-name:var(--font-display)] italic text-2xl sm:text-3xl text-[#4A7C39] dark:text-[#78B05F] leading-snug mb-3">
                 &ldquo;Turning data into meaningful stories.&rdquo;
               </blockquote>

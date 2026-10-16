@@ -8,7 +8,6 @@ import {
   Variants,
 } from "framer-motion";
 
-// ── Lenis smooth scroll — mounts once at app level ──
 export function SmoothScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -30,7 +29,6 @@ export function SmoothScroll() {
       };
       raf = requestAnimationFrame(loop);
 
-      // smooth anchor scrolling
       const onClick = (e: MouseEvent) => {
         const a = (e.target as Element).closest('a[href^="#"]');
         if (!a) return;
@@ -39,7 +37,25 @@ export function SmoothScroll() {
         const el = document.querySelector(id);
         if (!el) return;
         e.preventDefault();
-        lenis.scrollTo(el, { offset: -64, duration: 1.4 });
+        const scrollToCenter = (content: HTMLElement, screenPosition = 0.5) => {
+          const contentTop = content.getBoundingClientRect().top + window.scrollY;
+          const contentH   = content.offsetHeight;
+          const viewH      = window.innerHeight;
+          const target = contentTop + contentH / 2 - viewH * screenPosition;
+          lenis.scrollTo(Math.max(0, target), { duration: 1.4 });
+        };
+
+        if (id === "#about") {
+          const content = el.querySelector<HTMLElement>("[data-about-content]");
+          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
+        } else if (id === "#work") {
+          const content = el.querySelector<HTMLElement>("[data-work-content]");
+          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
+        } else if (id === "#contact") {
+          lenis.scrollTo(lenis.limit, { duration: 1.4 });
+        } else {
+          scrollToCenter(el as HTMLElement);
+        }
       };
       document.addEventListener("click", onClick);
 
@@ -59,7 +75,6 @@ export function SmoothScroll() {
   return null;
 }
 
-// ── Generic fade-up reveal ──
 export function Reveal({
   children,
   delay = 0,
@@ -86,7 +101,6 @@ export function Reveal({
   );
 }
 
-// ── MaskLines — text slides up from behind a clip mask (signature heading effect) ──
 export function MaskLines({
   lines,
   className = "",
@@ -126,7 +140,6 @@ export function MaskLines({
   );
 }
 
-// ── WordReveal — words fade-drift in one by one ──
 export function WordReveal({
   text,
   className = "",
@@ -163,7 +176,6 @@ export function WordReveal({
   );
 }
 
-// ── StaggerReveal — children stagger in on scroll ──
 export function StaggerReveal({
   children,
   className = "",
@@ -198,7 +210,6 @@ export const staggerChild: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
-// ── Parallax wrapper — element moves slower than scroll ──
 export function ParallaxY({
   children,
   speed = 0.3,

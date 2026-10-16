@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import { Reveal, MaskLines, StaggerReveal, staggerChild } from "./ScrollReveal";
 import { motion } from "framer-motion";
+import {
+  Braces,
+  Coffee,
+  Code2,
+  CodeXml,
+  FileCode2,
+  Globe,
+  NotebookTabs,
+  Palette,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 
 interface Repo {
   id: number;
@@ -13,10 +25,27 @@ interface Repo {
   language: string | null;
 }
 
-const LANG_EMOJI: Record<string, string> = {
-  Python: "🐍", JavaScript: "⚡", TypeScript: "💙",
-  Java: "☕", PHP: "🐘", HTML: "🌐", CSS: "🎨", Jupyter: "📓",
+const LANG_ICONS: Record<string, LucideIcon> = {
+  Python: Braces,
+  JavaScript: Zap,
+  TypeScript: CodeXml,
+  Java: Coffee,
+  PHP: Code2,
+  HTML: Globe,
+  CSS: Palette,
+  Jupyter: NotebookTabs,
 };
+
+function LanguageBadge({ language }: { language: string | null }) {
+  const Icon = LANG_ICONS[language ?? ""] ?? FileCode2;
+
+  return (
+    <p className="text-xs font-semibold uppercase tracking-wider text-[#4A7C39] dark:text-[#78B05F] mb-2 inline-flex items-center gap-1.5">
+      <Icon aria-hidden="true" size={14} strokeWidth={2} />
+      {language ?? "Code"}
+    </p>
+  );
+}
 
 const PLACEHOLDERS: Repo[] = [
   { id: 1, name: "Data Analysis Project", description: "An exploratory data analysis project — coming soon to GitHub.", html_url: "#", homepage: null, language: "Python" },
@@ -40,7 +69,8 @@ export function Projects() {
   }, []);
 
   return (
-    <section id="work" className="py-28 px-6 md:px-16 max-w-7xl mx-auto">
+    <section id="work" className="pt-28 pb-48 md:pb-56 px-6 md:px-16 max-w-7xl mx-auto">
+      <div data-work-content="true">
       <Reveal y={16}>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-4 flex items-center gap-2">
           <span className="block w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> Projects
@@ -73,9 +103,7 @@ export function Projects() {
             <div className="font-[family-name:var(--font-display)] text-5xl font-bold text-border group-hover:text-[#4A7C39]/50 dark:group-hover:text-[#78B05F]/50 transition-colors mb-4 leading-none">
               0{i + 1}
             </div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#4A7C39] dark:text-[#78B05F] mb-2">
-              {LANG_EMOJI[repo.language ?? ""] ?? "💻"} {repo.language ?? "Code"}
-            </p>
+            <LanguageBadge language={repo.language} />
             <h3 className="font-[family-name:var(--font-display)] text-2xl font-semibold mb-3 capitalize">
               {repo.name.replace(/-/g, " ")}
             </h3>
@@ -91,6 +119,7 @@ export function Projects() {
           </motion.article>
         ))}
       </StaggerReveal>
+      </div>
     </section>
   );
 }

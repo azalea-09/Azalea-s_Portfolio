@@ -18,7 +18,6 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
   const { theme } = useTheme();
   const dark = theme === "dark";
 
-  // Position is represented as a percentage [10%..90%] within its roaming zone
   const [posX, setPosX] = useState(50);
   const [state, setState] = useState<CharacterState>("idle");
   const [transitionDuration, setTransitionDuration] = useState(0);
@@ -29,7 +28,6 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const dialogueTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Preload GIFs to prevent flashing
   useEffect(() => {
     const assets = ["/Assets/idle.gif", "/Assets/walk_left.gif", "/Assets/walk_right.gif"];
     assets.forEach((src) => {
@@ -38,21 +36,18 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
     });
   }, []);
 
-  // Main wandering loop
   useEffect(() => {
     let isMounted = true;
 
     const planNextMovement = () => {
       if (!isMounted) return;
 
-      // Random idle duration: between 2.0s and 4.5s
       const idleTime = Math.floor(Math.random() * 2500) + 2000;
 
       timerRef.current = setTimeout(() => {
         if (!isMounted) return;
 
         const currentX = posXRef.current;
-        // Choose a target position between 10% and 90%
         let targetX = Math.floor(Math.random() * 80) + 10;
         let attempts = 0;
         while (Math.abs(targetX - currentX) < 18 && attempts < 10) {
@@ -118,9 +113,9 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
       className={`relative w-full h-48 md:h-56 select-none ${className}`}
       aria-label="Interactive companion character"
     >
-      {/* Roaming track container */}
+
       <div className="relative w-full h-full">
-        {/* Character container positioned by posX */}
+
         <div
           className="absolute bottom-4 -translate-x-1/2 flex flex-col items-center cursor-pointer group pointer-events-auto"
           style={{
@@ -130,7 +125,7 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
           onClick={handleClick}
           title="Click me to interact! 🐾"
         >
-          {/* Floating Dialogue Bubble */}
+
           {dialogue && (
             <div
               className="absolute -top-14 bg-white/95 dark:bg-[#25282B]/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#4A7C39]/40 shadow-xl text-xs font-semibold whitespace-nowrap animate-in fade-in zoom-in-95 duration-200 z-30"
@@ -143,7 +138,7 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
             </div>
           )}
 
-          {/* Floating Hearts particle effect when clicked */}
+
           {showHearts && (
             <div className="absolute -top-8 pointer-events-none flex gap-2 animate-bounce z-30">
               <span className="text-sm">🐾</span>
@@ -151,9 +146,9 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
             </div>
           )}
 
-          {/* Character GIF */}
+
           <div className="relative w-32 h-32 md:w-36 md:h-36 flex items-end justify-center transition-transform group-hover:scale-110 active:scale-95 duration-200">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {}
             <img
               src={getSpriteSrc()}
               alt={`Character (${state})`}
@@ -165,7 +160,7 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
             />
           </div>
 
-          {/* Status tooltip on hover */}
+
           {!dialogue && (
             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute -top-7 text-[11px] font-medium tracking-wide px-2.5 py-0.5 rounded-full bg-black/75 text-white/95 backdrop-blur-sm pointer-events-none whitespace-nowrap border border-white/10">
               {state === "idle" ? "Idle · Click me! 🐾" : "Walking 🐾"}

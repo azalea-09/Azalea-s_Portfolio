@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 
-// Particle shapes
 type Shape = "leaf1" | "leaf2" | "flower" | "petal";
 
 interface Particle {
@@ -23,16 +22,15 @@ interface Particle {
   swayOffset: number;
 }
 
-// Autumn-green palette
 const COLORS = [
-  "#4A7C39", // forest green
-  "#3D682B", // deep olive
-  "#284A1C", // pine green
-  "#5E8E47", // moss green
-  "#C8A850", // amber gold (autumn touch)
-  "#A36B3B", // warm terracotta
-  "#466E33", // deep botanical
-  "#D4B35A", // soft gold
+  "#4A7C39",
+  "#3D682B",
+  "#284A1C",
+  "#5E8E47",
+  "#C8A850",
+  "#A36B3B",
+  "#466E33",
+  "#D4B35A",
 ];
 
 const SHAPES: Shape[] = ["leaf1", "leaf2", "flower", "petal", "petal", "leaf1"];
@@ -43,7 +41,6 @@ function drawLeaf1(ctx: CanvasRenderingContext2D, size: number) {
   ctx.bezierCurveTo(size * 0.8, -size * 0.5, size * 0.8, size * 0.5, 0, size);
   ctx.bezierCurveTo(-size * 0.8, size * 0.5, -size * 0.8, -size * 0.5, 0, -size);
   ctx.fill();
-  // vein
   ctx.beginPath();
   ctx.moveTo(0, -size * 0.8);
   ctx.lineTo(0, size * 0.8);
@@ -71,7 +68,6 @@ function drawFlower(ctx: CanvasRenderingContext2D, size: number, color: string) 
     ctx.fill();
     ctx.restore();
   }
-  // center
   ctx.beginPath();
   ctx.arc(0, 0, size * 0.28, 0, Math.PI * 2);
   ctx.fillStyle = "#E8C55A";
@@ -103,7 +99,6 @@ export function AutumnCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
-    const FLOOR = canvas.height; // accumulate at bottom
     const MAX = 120;
 
     const spawn = (): Particle => {
@@ -127,23 +122,32 @@ export function AutumnCanvas() {
       };
     };
 
-    // Settled pile tracking — use a height map per x column
     const COLS = 80;
     const pileHeight = new Float32Array(COLS).fill(0);
+
+    const floorWave = (x: number) => {
+      const t = x / canvas.width;
+      return (
+        Math.sin(t * Math.PI * 3.2) * 10 +
+        Math.sin(t * Math.PI * 7.1 + 1.2) * 5 +
+        6
+      );
+    };
 
     const getPileY = (x: number) => {
       const col = Math.floor((x / canvas.width) * COLS);
       const c = Math.max(0, Math.min(COLS - 1, col));
-      return canvas.height - pileHeight[c];
+      return canvas.height - floorWave(x) - pileHeight[c];
     };
 
     const addToPile = (x: number, size: number) => {
       const col = Math.floor((x / canvas.width) * COLS);
       const spread = 2;
+      const maxH = Math.min(90, canvas.height * 0.22);
       for (let i = -spread; i <= spread; i++) {
         const c = Math.max(0, Math.min(COLS - 1, col + i));
         const weight = 1 - Math.abs(i) / (spread + 1);
-        pileHeight[c] = Math.min(canvas.height * 0.45, pileHeight[c] + size * 0.18 * weight);
+        pileHeight[c] = Math.min(maxH, pileHeight[c] + size * 0.18 * weight);
       }
     };
 
@@ -153,27 +157,26 @@ export function AutumnCanvas() {
       timeRef.current = time;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Spawn new particles
       spawnTimer += 16;
       if (spawnTimer > 200 && particlesRef.current.length < MAX) {
         particlesRef.current.push(spawn());
         spawnTimer = 0;
       }
 
-      // Draw pile gradient at bottom
       const maxPile = Math.max(...Array.from(pileHeight));
       if (maxPile > 2) {
-        const grad = ctx.createLinearGradient(0, canvas.height - maxPile - 20, 0, canvas.height);
+        const bedTop = canvas.height - maxPile - 28;
+        const grad = ctx.createLinearGradient(0, bedTop, 0, canvas.height);
         grad.addColorStop(0, "rgba(45,80,22,0)");
-        grad.addColorStop(0.4, "rgba(45,80,22,0.18)");
-        grad.addColorStop(1, "rgba(45,80,22,0.45)");
+        grad.addColorStop(0.35, "rgba(45,80,22,0.14)");
+        grad.addColorStop(0.75, "rgba(45,80,22,0.28)");
+        grad.addColorStop(1, "rgba(45,80,22,0)");
         ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, bedTop, canvas.width, canvas.height - bedTop);
       }
 
       particlesRef.current.forEach((p) => {
         if (p.settled) {
-          // draw settled particle (slight opacity fade)
           ctx.save();
           ctx.globalAlpha = p.opacity * 0.75;
           ctx.translate(p.x, p.settleY);
@@ -187,13 +190,11 @@ export function AutumnCanvas() {
           return;
         }
 
-        // Update position
         p.sway = Math.sin(time * p.swaySpeed * 0.001 + p.swayOffset) * 1.8;
         p.x += p.speedX + p.sway * 0.05;
         p.y += p.speedY;
         p.rotation += p.rotSpeed;
 
-        // Check pile collision
         const pileY = getPileY(p.x);
         if (p.y + p.size >= pileY) {
           p.settled = true;
@@ -201,11 +202,9 @@ export function AutumnCanvas() {
           addToPile(p.x, p.size);
         }
 
-        // Wrap horizontally
         if (p.x < -p.size * 2) p.x = canvas.width + p.size;
         if (p.x > canvas.width + p.size * 2) p.x = -p.size;
 
-        // Draw falling
         ctx.save();
         ctx.globalAlpha = p.opacity;
         ctx.translate(p.x, p.y);
