@@ -37,7 +37,7 @@ export function About() {
           />
 
           <WordReveal
-            text="I'm always excited to learn, create, and explore new things — and I'm actively looking for internship opportunities in Data Analytics, Data Engineering, or Data Science."
+            text="I'm always excited to learn, create, and explore new things and I'm actively looking for internship opportunities in Data Analytics, Data Engineering, or Data Science."
             className="text-muted-foreground leading-relaxed text-base sm:text-lg mb-8"
             delay={0.05}
           />
@@ -57,21 +57,21 @@ export function About() {
 
 
         <div className="lg:col-span-5 flex justify-center w-full">
-          <Reveal delay={0.15} y={30} className="w-full max-w-md">
-            <div className="relative rounded-2xl border-2 border-[#4A7C39]/40 bg-card p-5 sm:p-7 shadow-[6px_6px_0_#244015]">
-              <div className="absolute inset-3 border border-dashed border-[#4A7C39]/20 rounded-xl pointer-events-none" />
+          <Reveal delay={0.15} y={30} className="w-full max-w-xs sm:max-w-[340px]">
+            <div className="relative rounded-2xl border-2 border-[#4A7C39]/40 bg-card p-4 sm:p-5 shadow-[5px_5px_0_#244015]">
+              <div className="absolute inset-2.5 sm:inset-3 border border-dashed border-[#4A7C39]/20 rounded-xl pointer-events-none" />
               <span className="absolute -top-3.5 right-6 bg-[#4A7C39] text-white text-xs font-bold uppercase tracking-widest px-3.5 py-1 rounded-md shadow-sm z-10">
                 Hello
               </span>
 
 
-              <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-[#4A7C39]/25 bg-[#4A7C39]/5 mb-5 group flex items-center justify-center">
+              <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-[#4A7C39]/25 bg-[#4A7C39]/5 mb-3.5 group flex items-center justify-center">
                 {!imageError ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src="/profile.jpg"
+                    src="/Assets/About%20Me%20Photo.jpeg"
                     alt="Valentina Azalea"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover object-[center_35%] scale-125 transition-transform duration-500 group-hover:scale-[1.32]"
                     onError={() => setImageError(true)}
                   />
                 ) : (
@@ -86,11 +86,11 @@ export function About() {
               </div>
 
 
-              <blockquote className="font-[family-name:var(--font-display)] italic text-2xl sm:text-3xl text-[#4A7C39] dark:text-[#78B05F] leading-snug mb-3">
+              <blockquote className="font-[family-name:var(--font-display)] italic text-lg sm:text-xl text-[#4A7C39] dark:text-[#78B05F] leading-snug mb-2">
                 &ldquo;Turning data into meaningful stories.&rdquo;
               </blockquote>
-              <div className="h-px bg-[#4A7C39]/20 mb-3" />
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <div className="h-px bg-[#4A7C39]/20 mb-2" />
+              <p className="text-xs text-muted-foreground">
                 Computer Science · BINUS University
               </p>
             </div>

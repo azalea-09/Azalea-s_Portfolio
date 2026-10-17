@@ -286,7 +286,7 @@ export function Contact() {
 
           {/* Footer note */}
           <footer className="mt-8 text-xs sm:text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
-            ✦ Valentina Azalea Kanaya Kriswandaru · CS @ BINUS University · Built with 🌿 &amp; 🐾
+            ✦ Valentina Azalea Kanaya Kriswandaru · CS @ BINUS University ·
           </footer>
         </motion.div>
       </motion.div>
