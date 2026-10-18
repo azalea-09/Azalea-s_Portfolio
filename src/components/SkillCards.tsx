@@ -111,19 +111,19 @@ const SKILL_DATA: SkillCardProps[] = [
 
 export function SkillCards() {
   return (
-    <section id="skills" className="py-28 px-6 md:px-16 max-w-7xl mx-auto">
-      <div data-skills-content="true">
+    <section id="skills" className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 max-w-7xl mx-auto w-full relative scroll-mt-0">
+      <div data-skills-content="true" className="w-full my-auto">
       <Reveal y={16}>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-4 flex items-center gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-3 flex items-center gap-2">
           <span className="block w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> Skills
         </p>
       </Reveal>
       <MaskLines
         lines={["What I Work With"]}
-        className="font-[family-name:var(--font-display)] text-5xl md:text-6xl font-semibold mb-12"
+        className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-8 sm:mb-10"
         delay={0.05}
       />
-      <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" stagger={0.09}>
+      <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" stagger={0.09}>
         {SKILL_DATA.map((card) => (
           <motion.div key={card.title} variants={staggerChild}>
             <SkillCard {...card} />

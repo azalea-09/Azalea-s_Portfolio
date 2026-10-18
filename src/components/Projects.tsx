@@ -132,6 +132,8 @@ export function Projects() {
   const [scrollLeftState, setScrollLeftState] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filteredProjects =
     selectedFilter === "All"
@@ -148,56 +150,96 @@ export function Projects() {
     }))
   ).flat();
 
-  // Scroll by one card step
-  const scrollStep = useCallback((direction: "left" | "right") => {
+  // Helper: get card step width
+  const getStep = useCallback(() => {
     const container = scrollRef.current;
-    if (!container) return;
+    if (!container) return 300;
     const card = container.querySelector<HTMLElement>("[data-card-item]");
-    const step = (card ? card.offsetWidth + 20 : 340) * (direction === "right" ? 1 : -1);
-    container.scrollBy({ left: step, behavior: "smooth" });
+    if (!card) return 300;
+    const gap = typeof window !== "undefined" && window.innerWidth < 640 ? 12 : 16;
+    return card.offsetWidth + gap;
   }, []);
 
+  // Navigate to a specific activeIndex (programmatic scroll)
+  const navigateTo = useCallback(
+    (index: number) => {
+      const container = scrollRef.current;
+      if (!container || filteredProjects.length === 0) return;
+
+      const step = getStep();
+      const setWidth = filteredProjects.length * step;
+      const middleSetStart = Math.floor(repeatCount / 2) * setWidth;
+
+      // Mark as programmatic scrolling so handleScroll won't interfere
+      isScrollingRef.current = true;
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+
+      container.scrollTo({
+        left: middleSetStart + index * step,
+        behavior: "smooth",
+      });
+      setActiveIndex(index);
+
+      // Release the lock after smooth scroll finishes (~500ms)
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 600);
+    },
+    [filteredProjects.length, repeatCount, getStep]
+  );
+
+  // Scroll by one card (left or right), wrapping around
+  const scrollStep = useCallback(
+    (direction: "left" | "right") => {
+      if (filteredProjects.length === 0) return;
+      setActiveIndex((prev) => {
+        const next =
+          direction === "right"
+            ? (prev + 1) % filteredProjects.length
+            : (prev - 1 + filteredProjects.length) % filteredProjects.length;
+        // Schedule navigateTo in next tick so state is updated
+        setTimeout(() => navigateTo(next), 0);
+        return next;
+      });
+    },
+    [filteredProjects.length, navigateTo]
+  );
+
   // Jump to specific project dot
-  const scrollToProject = (index: number) => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const card = container.querySelector<HTMLElement>("[data-card-item]");
-    if (!card) return;
-    const step = card.offsetWidth + 20;
-    const setWidth = filteredProjects.length * step;
-    const middleSetStart = Math.floor(repeatCount / 2) * setWidth;
-    container.scrollTo({
-      left: middleSetStart + index * step,
-      behavior: "smooth",
-    });
-    setActiveIndex(index);
-  };
+  const scrollToProject = useCallback(
+    (index: number) => {
+      navigateTo(index);
+    },
+    [navigateTo]
+  );
 
   // Center on middle set on mount or filter change
   useEffect(() => {
     const container = scrollRef.current;
-    if (!container) return;
-    const card = container.querySelector<HTMLElement>("[data-card-item]");
-    const step = card ? card.offsetWidth + 20 : 340;
+    if (!container || filteredProjects.length === 0) return;
+    const step = getStep();
     const middleSetStart = Math.floor(repeatCount / 2) * (filteredProjects.length * step);
+    // Instant jump (no smooth) on filter change
     container.scrollLeft = middleSetStart;
     setActiveIndex(0);
-  }, [selectedFilter, filteredProjects.length, repeatCount]);
+    isScrollingRef.current = false;
+  }, [selectedFilter, filteredProjects.length, repeatCount, getStep]);
 
-  // Infinite looping boundary check on scroll
+  // Infinite looping boundary check on scroll (only for manual/drag scrolling)
   const handleScroll = () => {
+    // Skip boundary logic while a programmatic smooth scroll is in progress
+    if (isScrollingRef.current) return;
+
     const container = scrollRef.current;
     if (!container) return;
-    const card = container.querySelector<HTMLElement>("[data-card-item]");
-    if (!card) return;
-    const step = card.offsetWidth + 20;
+    const step = getStep();
     const setWidth = filteredProjects.length * step;
     if (setWidth <= 0) return;
 
     // Seamless teleport if reaching boundary
     if (container.scrollLeft >= setWidth * (repeatCount - 1)) {
       container.scrollLeft -= setWidth;
-    } else if (container.scrollLeft <= setWidth * 0.5) {
+    } else if (container.scrollLeft <= step * 0.5) {
       container.scrollLeft += setWidth;
     }
 
@@ -207,7 +249,7 @@ export function Projects() {
     setActiveIndex(currentIdx);
   };
 
-  // Autoplay loop timer — changes every 5 seconds
+  // Autoplay loop timer — advances one card every 5 seconds
   useEffect(() => {
     if (isPaused || isHovered || isDragging) return;
     const timer = setInterval(() => {
@@ -215,6 +257,13 @@ export function Projects() {
     }, 5000);
     return () => clearInterval(timer);
   }, [isPaused, isHovered, isDragging, scrollStep]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
+  }, []);
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -225,7 +274,11 @@ export function Projects() {
     setScrollLeftState(container.scrollLeft);
   };
 
-  const handleMouseLeaveOrUp = () => {
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
     setIsDragging(false);
     setIsHovered(false);
   };
@@ -241,19 +294,19 @@ export function Projects() {
   };
 
   return (
-    <section id="work" className="pt-24 pb-44 md:pb-52 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto overflow-hidden">
-      <div data-work-content="true">
+    <section id="work" className="min-h-screen flex flex-col justify-center px-3 sm:px-6 md:px-12 py-10 sm:py-14 md:py-18 max-w-7xl mx-auto w-full relative overflow-hidden scroll-mt-0">
+      <div data-work-content="true" className="w-full my-auto">
         {/* Header section */}
         <Reveal y={16}>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-3 flex items-center gap-2">
-            <span className="block w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> Projects
+          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-1.5 sm:mb-2 flex items-center gap-2">
+            <span className="block w-4 sm:w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> Projects
           </p>
         </Reveal>
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-3">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 sm:gap-3 mb-2">
           <MaskLines
             lines={["Selected Work"]}
-            className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-semibold"
+            className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold"
             delay={0.05}
           />
 
@@ -262,17 +315,17 @@ export function Projects() {
             <button
               onClick={() => setIsPaused((prev) => !prev)}
               aria-label={isPaused ? "Resume 5s auto-scroll" : "Pause 5s auto-scroll"}
-              className="px-3 py-1.5 rounded-full border border-border bg-card/80 hover:bg-[#4A7C39]/10 hover:border-[#4A7C39]/40 text-foreground text-xs font-medium transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1 rounded-full border border-border bg-card/80 hover:bg-[#4A7C39]/10 hover:border-[#4A7C39]/40 text-foreground text-[10.5px] sm:text-[11px] font-medium transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
               title={isPaused ? "Resume auto-scroll" : "Pause auto-scroll"}
             >
               {isPaused ? (
                 <>
-                  <Play size={12} className="text-[#4A7C39] dark:text-[#78B05F]" />
+                  <Play size={10} className="text-[#4A7C39] dark:text-[#78B05F]" />
                   <span>Paused</span>
                 </>
               ) : (
                 <>
-                  <Pause size={12} className="text-muted-foreground" />
+                  <Pause size={10} className="text-muted-foreground" />
                   <span className="text-muted-foreground">5s Auto-loop</span>
                 </>
               )}
@@ -281,13 +334,13 @@ export function Projects() {
         </div>
 
         <Reveal delay={0.15} y={16}>
-          <p className="text-muted-foreground text-xs sm:text-sm mb-6 max-w-2xl">
+          <p className="text-muted-foreground text-xs mb-4 sm:mb-5 max-w-2xl leading-normal">
             Featured Data Science, Analytics, and AI projects exploring real-world impact.
           </p>
         </Reveal>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-8">
+        <div className="flex flex-wrap items-center gap-1.5 mb-5 sm:mb-6">
           {FILTER_TABS.map((tab) => {
             const count =
               tab === "All"
@@ -299,14 +352,14 @@ export function Projects() {
               <button
                 key={tab}
                 onClick={() => setSelectedFilter(tab)}
-                className={`px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${active
-                  ? "bg-[#4A7C39] text-white border-[#4A7C39] shadow-[0_0_14px_rgba(74,124,57,0.3)]"
+                className={`px-2.5 sm:px-3 py-1 rounded-full text-[10.5px] sm:text-[11px] font-semibold tracking-wide transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${active
+                  ? "bg-[#4A7C39] text-white border-[#4A7C39] shadow-[0_0_12px_rgba(74,124,57,0.3)]"
                   : "bg-card/60 text-muted-foreground border-border hover:border-[#4A7C39]/40 hover:text-foreground"
                   }`}
               >
                 <span>{tab}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${active
+                  className={`text-[9px] px-1.5 py-0.2 rounded-full ${active
                     ? "bg-white/20 text-white"
                     : "bg-muted text-muted-foreground"
                     }`}
@@ -320,26 +373,26 @@ export function Projects() {
 
         {/* Carousel Container with Side Navigation Buttons */}
         <div
-          className="relative group/carousel -mx-4 sm:-mx-6 md:-mx-16 px-4 sm:px-6 md:px-16"
+          className="relative group/carousel -mx-3 sm:-mx-6 md:-mx-12 px-3 sm:px-6 md:px-12"
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={handleMouseLeaveOrUp}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Side Button LEFT */}
           <button
             onClick={() => scrollStep("left")}
             aria-label="Previous project"
-            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-border/80 bg-background/95 dark:bg-card/95 backdrop-blur-md shadow-xl flex items-center justify-center text-foreground hover:bg-[#4A7C39] hover:text-white hover:border-[#4A7C39] dark:hover:bg-[#78B05F] dark:hover:text-black transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 group/btn"
+            className="absolute left-1 sm:left-2 md:left-3 top-1/2 -translate-y-1/2 z-30 w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border border-border/80 bg-background/95 dark:bg-card/95 backdrop-blur-md shadow-lg flex items-center justify-center text-foreground hover:bg-[#4A7C39] hover:text-white hover:border-[#4A7C39] dark:hover:bg-[#78B05F] dark:hover:text-black transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 group/btn"
           >
-            <ChevronLeft size={22} className="transition-transform group-hover/btn:-translate-x-0.5" />
+            <ChevronLeft size={16} className="transition-transform group-hover/btn:-translate-x-0.5 sm:w-4 sm:h-4" />
           </button>
 
           {/* Side Button RIGHT */}
           <button
             onClick={() => scrollStep("right")}
             aria-label="Next project"
-            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-border/80 bg-background/95 dark:bg-card/95 backdrop-blur-md shadow-xl flex items-center justify-center text-foreground hover:bg-[#4A7C39] hover:text-white hover:border-[#4A7C39] dark:hover:bg-[#78B05F] dark:hover:text-black transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 group/btn"
+            className="absolute right-1 sm:right-2 md:right-3 top-1/2 -translate-y-1/2 z-30 w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border border-border/80 bg-background/95 dark:bg-card/95 backdrop-blur-md shadow-lg flex items-center justify-center text-foreground hover:bg-[#4A7C39] hover:text-white hover:border-[#4A7C39] dark:hover:bg-[#78B05F] dark:hover:text-black transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 group/btn"
           >
-            <ChevronRight size={22} className="transition-transform group-hover/btn:translate-x-0.5" />
+            <ChevronRight size={16} className="transition-transform group-hover/btn:translate-x-0.5 sm:w-4 sm:h-4" />
           </button>
 
           {/* Scroll Track */}
@@ -347,13 +400,10 @@ export function Projects() {
             ref={scrollRef}
             onScroll={handleScroll}
             onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseLeaveOrUp}
+            onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
-            className={`flex gap-5 overflow-x-auto pb-4 pt-1 select-none scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] ${isDragging ? "cursor-grabbing" : "cursor-grab"
+            className={`flex gap-3 sm:gap-4 overflow-x-auto pb-3 pt-1 select-none scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] ${isDragging ? "cursor-grabbing" : "cursor-grab"
               }`}
-            style={{
-              scrollBehavior: isDragging ? "auto" : "smooth",
-            }}
           >
             {displayProjects.map((project) => {
               const Icon = project.icon;
@@ -362,11 +412,20 @@ export function Projects() {
                 <article
                   key={project.uniqueKey}
                   data-card-item="true"
-                  className="w-[290px] sm:w-[325px] md:w-[340px] h-[480px] sm:h-[500px] shrink-0 relative flex flex-col justify-between rounded-2xl border border-border bg-card/95 dark:bg-card/70 backdrop-blur-sm p-4 sm:p-5 transition-all duration-300 hover:border-[#4A7C39]/50 dark:hover:border-[#78B05F]/50 hover:shadow-[0_8px_30px_rgba(74,124,57,0.1)] group"
+                  className="shrink-0 relative flex flex-col justify-between rounded-xl sm:rounded-2xl border border-border bg-card/95 dark:bg-card/70 backdrop-blur-sm p-3 sm:p-3.5 transition-all duration-300 hover:border-[#4A7C39]/50 dark:hover:border-[#78B05F]/50 hover:shadow-[0_8px_24px_rgba(74,124,57,0.12)] group"
+                  style={{
+                    width: "clamp(240px, 78vw, 300px)",
+                    height: "clamp(300px, 46vh, 385px)",
+                  }}
                 >
-                  <div>
+                  <div className="min-w-0">
                     {/* Project Image Banner */}
-                    <div className="relative w-full h-36 sm:h-40 rounded-xl overflow-hidden mb-3.5 border border-border/60 bg-muted/20">
+                    <div
+                      className="relative w-full rounded-lg sm:rounded-xl overflow-hidden mb-2 border border-border/60 bg-muted/20"
+                      style={{
+                        height: "clamp(85px, 13vh, 115px)",
+                      }}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={project.image}
@@ -375,48 +434,48 @@ export function Projects() {
                         loading="lazy"
                       />
                       {/* Floating index badge */}
-                      <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/65 backdrop-blur-md text-white font-[family-name:var(--font-display)] text-xs font-bold shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/65 backdrop-blur-md text-white font-[family-name:var(--font-display)] text-[10px] font-bold shadow-sm">
                         0{project.id}
                       </div>
 
                       {/* Floating category badge */}
-                      <div className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-black/65 backdrop-blur-md text-[#A8E68A] border border-[#78B05F]/40 shadow-sm">
-                        <Icon size={11} strokeWidth={2.2} />
+                      <div className="absolute top-1.5 right-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold tracking-wider uppercase bg-black/65 backdrop-blur-md text-[#A8E68A] border border-[#78B05F]/40 shadow-sm">
+                        <Icon size={9} strokeWidth={2.2} />
                         <span>{project.category}</span>
                       </div>
                     </div>
 
                     {/* Award / Competition Highlight */}
                     {project.award && (
-                      <div className="mb-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10.5px] font-semibold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 line-clamp-1">
-                        <Trophy size={12} className="shrink-0 text-amber-600 dark:text-amber-400" />
+                      <div className="mb-1 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] font-semibold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 line-clamp-1">
+                        <Trophy size={10} className="shrink-0 text-amber-600 dark:text-amber-400" />
                         <span className="truncate">{project.award}</span>
                       </div>
                     )}
 
                     {/* Title */}
-                    <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-foreground mb-1.5 tracking-tight leading-snug line-clamp-2 group-hover:text-[#4A7C39] dark:group-hover:text-[#78B05F] transition-colors">
+                    <h3 className="font-[family-name:var(--font-display)] text-[13px] sm:text-sm font-bold text-foreground mb-1 tracking-tight leading-snug line-clamp-2 group-hover:text-[#4A7C39] dark:group-hover:text-[#78B05F] transition-colors">
                       {project.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-2">
+                    <p className="text-[10.5px] sm:text-[11px] text-muted-foreground leading-relaxed line-clamp-2 mb-1.5">
                       {project.description}
                     </p>
                   </div>
 
                   {/* Tools & Links */}
-                  <div>
+                  <div className="pt-1">
                     {/* Tools */}
-                    <div className="mb-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5">
+                    <div className="mb-2">
+                      <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">
                         Tools &amp; Tech
                       </p>
-                      <div className="flex flex-wrap gap-1 max-h-[52px] overflow-hidden">
+                      <div className="flex flex-wrap gap-1 max-h-[36px] overflow-hidden">
                         {project.tools.map((tool) => (
                           <span
                             key={tool}
-                            className="text-[10px] px-2 py-0.5 rounded bg-muted/70 dark:bg-muted/40 text-foreground/80 border border-border/60 font-mono"
+                            className="text-[9px] px-1.5 py-0.5 rounded bg-muted/70 dark:bg-muted/40 text-foreground/80 border border-border/60 font-mono"
                           >
                             {tool}
                           </span>
@@ -425,25 +484,25 @@ export function Projects() {
                     </div>
 
                     {/* Card Footer Link */}
-                    <div className="pt-2.5 border-t border-border/60 flex items-center justify-between">
+                    <div className="pt-1.5 border-t border-border/60 flex items-center justify-between">
                       {project.githubUrl ? (
                         <a
                           href={project.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#4A7C39] dark:text-[#78B05F] group-hover:gap-1.5 transition-all w-fit"
+                          className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-semibold text-[#4A7C39] dark:text-[#78B05F] group-hover:gap-1.5 transition-all w-fit"
                         >
                           <span>View on GitHub</span>
-                          <ArrowUpRight size={13} />
+                          <ArrowUpRight size={11} />
                         </a>
                       ) : (
-                        <span className="text-xs text-muted-foreground/50">
+                        <span className="text-[10px] text-muted-foreground/50">
                           In development
                         </span>
                       )}
 
-                      <span className="text-[10px] font-mono text-muted-foreground/50">
+                      <span className="text-[9px] font-mono text-muted-foreground/50">
                         {project.tools.length} tags
                       </span>
                     </div>

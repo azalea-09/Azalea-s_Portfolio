@@ -18,9 +18,13 @@ export function SmoothScroll() {
 
     import("lenis").then(({ default: Lenis }) => {
       lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.0,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: "vertical",
+        gestureOrientation: "vertical",
         smoothWheel: true,
+        wheelMultiplier: 0.95,
+        touchMultiplier: 1.5,
       });
 
       const loop = (time: number) => {
@@ -37,29 +41,8 @@ export function SmoothScroll() {
         const el = document.querySelector(id);
         if (!el) return;
         e.preventDefault();
-        const scrollToCenter = (content: HTMLElement, screenPosition = 0.5) => {
-          const contentTop = content.getBoundingClientRect().top + window.scrollY;
-          const contentH   = content.offsetHeight;
-          const viewH      = window.innerHeight;
-          const target = contentTop + contentH / 2 - viewH * screenPosition;
-          lenis.scrollTo(Math.max(0, target), { duration: 1.4 });
-        };
 
-        if (id === "#about") {
-          const content = el.querySelector<HTMLElement>("[data-about-content]");
-          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
-        } else if (id === "#work") {
-          const content = el.querySelector<HTMLElement>("[data-work-content]");
-          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
-        } else if (id === "#skills") {
-          const content = el.querySelector<HTMLElement>("[data-skills-content]");
-          content ? scrollToCenter(content) : lenis.scrollTo(el, { offset: -80, duration: 1.4 });
-        } else if (id === "#contact") {
-          const content = el.querySelector<HTMLElement>("[data-contact-content]");
-          content ? scrollToCenter(content, 0.45) : lenis.scrollTo(el, { offset: -60, duration: 1.4 });
-        } else {
-          scrollToCenter(el as HTMLElement);
-        }
+        lenis.scrollTo(el, { offset: 0, duration: 1.1, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
       };
       document.addEventListener("click", onClick);
 

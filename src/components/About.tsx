@@ -13,12 +13,12 @@ export function About() {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <section id="about" className="pt-56 md:pt-72 pb-24 md:pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-      <div data-about-content="true" className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <section id="about" className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 max-w-7xl mx-auto w-full relative scroll-mt-0">
+      <div data-about-content="true" className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto">
 
         <div className="lg:col-span-7 flex flex-col justify-center">
           <Reveal delay={0} y={16}>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-4 flex items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C39] dark:text-[#78B05F] mb-3 flex items-center gap-2">
               <span className="block w-5 h-px bg-[#4A7C39] dark:bg-[#78B05F]" /> About
             </p>
           </Reveal>
@@ -26,28 +26,28 @@ export function About() {
 
           <MaskLines
             lines={["Hello, I'm", "Azalea 🌸"]}
-            className="font-[family-name:var(--font-display)] text-5xl md:text-6xl font-semibold mb-6 leading-tight"
+            className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-4 sm:mb-6 leading-tight"
             delay={0.05}
           />
 
           <WordReveal
             text="I'm a Computer Science student at BINUS University who enjoys combining technology and creativity. I'm interested in data, AI, software development, and UI/UX, and I love turning ideas into practical and meaningful digital experiences."
-            className="text-muted-foreground leading-relaxed text-base sm:text-lg mb-4"
+            className="text-muted-foreground leading-relaxed text-sm sm:text-base mb-3 sm:mb-4"
             delay={0.1}
           />
 
           <WordReveal
             text="I'm always excited to learn, create, and explore new things and I'm actively looking for internship opportunities in Data Analytics, Data Engineering, or Data Science."
-            className="text-muted-foreground leading-relaxed text-base sm:text-lg mb-8"
+            className="text-muted-foreground leading-relaxed text-sm sm:text-base mb-6 sm:mb-8"
             delay={0.05}
           />
 
-          <StaggerReveal className="flex flex-wrap gap-2.5" stagger={0.07} delay={0.1}>
+          <StaggerReveal className="flex flex-wrap gap-2 sm:gap-2.5" stagger={0.07} delay={0.1}>
             {chips.map((chip) => (
               <motion.span
                 key={chip}
                 variants={staggerChild}
-                className="text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full border border-[#4A7C39]/30 text-foreground bg-[#4A7C39]/5"
+                className="text-[11px] sm:text-xs md:text-sm font-medium px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#4A7C39]/30 text-foreground bg-[#4A7C39]/5"
               >
                 {chip}
               </motion.span>
@@ -57,10 +57,10 @@ export function About() {
 
 
         <div className="lg:col-span-5 flex justify-center w-full">
-          <Reveal delay={0.15} y={30} className="w-full max-w-xs sm:max-w-[340px]">
-            <div className="relative rounded-2xl border-2 border-[#4A7C39]/40 bg-card p-4 sm:p-5 shadow-[5px_5px_0_#244015]">
-              <div className="absolute inset-2.5 sm:inset-3 border border-dashed border-[#4A7C39]/20 rounded-xl pointer-events-none" />
-              <span className="absolute -top-3.5 right-6 bg-[#4A7C39] text-white text-xs font-bold uppercase tracking-widest px-3.5 py-1 rounded-md shadow-sm z-10">
+          <Reveal delay={0.15} y={30} className="w-full max-w-[260px] sm:max-w-[300px] md:max-w-[320px]">
+            <div className="relative rounded-2xl border-2 border-[#4A7C39]/40 bg-card p-3.5 sm:p-4 md:p-5 shadow-[5px_5px_0_#244015]">
+              <div className="absolute inset-2 sm:inset-3 border border-dashed border-[#4A7C39]/20 rounded-xl pointer-events-none" />
+              <span className="absolute -top-3 right-5 sm:right-6 bg-[#4A7C39] text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-md shadow-sm z-10">
                 Hello
               </span>
 

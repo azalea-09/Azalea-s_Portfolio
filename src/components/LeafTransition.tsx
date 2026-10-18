@@ -39,9 +39,9 @@ const decorations: Decoration[] = [0, 1, 2, 3].flatMap((row) => {
     const seed = index * 37 + row * 139 + 11;
     return {
       x: index * spacing + (randomAt(seed) - 0.5) * spacing * 0.8 + (row % 2) * spacing * 0.35,
-      y: 94 + row * 19 + (randomAt(seed + 1) - 0.5) * 14,
+      y: 78 + row * 15 + (randomAt(seed + 1) - 0.5) * 10,
       rotation: randomAt(seed + 2) * 360 - 180,
-      scale: 0.35 + randomAt(seed + 3) * 0.22,
+      scale: 0.32 + randomAt(seed + 3) * 0.2,
       color: LEAF_COLORS[Math.floor(randomAt(seed + 4) * LEAF_COLORS.length)],
       shape: SHAPES[Math.floor(randomAt(seed + 5) * SHAPES.length)],
     };
@@ -70,9 +70,7 @@ const createRidge = (offset = 0) => {
 };
 
 const greenBottomY = (step: number) =>
-  178 + smoothVariation(step, 1210, 5, 4) + smoothVariation(step, 1640, 2, 1.2);
-const brownBottomY = (step: number) =>
-  232 + smoothVariation(step, 2210, 5, 6) + smoothVariation(step, 2640, 2, 1.5);
+  168 + smoothVariation(step, 1210, 5, 4) + smoothVariation(step, 1640, 2, 1.2);
 
 const createBottomEdge = (getY: (step: number) => number) =>
   Array.from({ length: 36 }, (_, index) => {
@@ -89,9 +87,9 @@ const foreground: Decoration[] = Array.from({ length: 32 }, (_, index) => {
   const spacing = 1440 / 32;
   return {
     x: index * spacing + (randomAt(seed) - 0.5) * spacing * 0.75,
-    y: 144 + randomAt(seed + 1) * 14,
+    y: 125 + randomAt(seed + 1) * 12,
     rotation: randomAt(seed + 2) * 360 - 180,
-    scale: 0.34 + randomAt(seed + 3) * 0.14,
+    scale: 0.32 + randomAt(seed + 3) * 0.12,
     color: LEAF_COLORS[Math.floor(randomAt(seed + 4) * LEAF_COLORS.length)],
     shape: SHAPES[Math.floor(randomAt(seed + 5) * SHAPES.length)],
   };
@@ -101,17 +99,18 @@ const soilMarks = Array.from({ length: 110 }, (_, index) => {
   const seed = 3200 + index * 29;
   return {
     x: randomAt(seed) * 1440,
-    y: 187 + randomAt(seed + 1) * 31,
+    y: 182 + randomAt(seed + 1) * 35,
     size: 0.7 + randomAt(seed + 2) * 1.2,
     light: randomAt(seed + 3) > 0.72,
   };
 });
 
 const greenSoilPath = `${bedRidge} L1440 ${greenBottomY(36)} ${createBottomEdge(greenBottomY)} Z`;
-const brownSoilPath = `${bedRidge} L1440 ${brownBottomY(36)} ${createBottomEdge(brownBottomY)} Z`;
+// Brown soil extends completely down to bottom (y=240) so no empty transparent gap exists
+const brownSoilPath = `${bedRidge} L1440 240 L0 240 Z`;
 
 
-export function LeafTransition() {
+export function LeafTransition({ className = "" }: { className?: string }) {
   const { theme } = useTheme();
   const dark = theme === "dark";
   const soil = dark ? "#304A28" : "#5C8041";
@@ -120,7 +119,7 @@ export function LeafTransition() {
 
   return (
     <div
-      className="relative z-20 -mt-28 md:-mt-36 h-48 md:h-60 pointer-events-none select-none"
+      className={`pointer-events-none select-none ${className || "relative z-20 -mt-28 md:-mt-36 h-48 md:h-60"}`}
       aria-hidden
     >
       <svg
@@ -130,7 +129,6 @@ export function LeafTransition() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-
           <symbol id="bed-leaf1" viewBox="-1 -1 2 2">
             <path d="M0-1C0.8-0.5 0.8 0.5 0 1C-0.8 0.5-0.8-0.5 0-1Z" fill="currentColor" />
             <path d="M0-0.8 0 0.8" fill="none" stroke="#D5C18A" strokeWidth="0.045" />
@@ -153,6 +151,10 @@ export function LeafTransition() {
           </symbol>
           <clipPath id="topsoil-clip">
             <path d={greenSoilPath} />
+          </clipPath>
+          {/* Strictly clip foliage so leaves NEVER extend below the green vegetation zone into soil */}
+          <clipPath id="foliage-boundary-clip">
+            <rect x="0" y="0" width="1440" height="165" />
           </clipPath>
         </defs>
 
@@ -179,7 +181,7 @@ export function LeafTransition() {
         ))}
 
 
-        <g>
+        <g clipPath="url(#foliage-boundary-clip)">
           {decorations.map((item, index) => (
             <g
               key={index}

@@ -117,7 +117,7 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="relative pt-16 md:pt-24 pb-20 md:pb-28 px-6 md:px-12 text-center max-w-5xl mx-auto"
+      className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 text-center max-w-5xl mx-auto w-full relative scroll-mt-0"
     >
       <motion.div
         data-contact-content="true"
@@ -125,11 +125,11 @@ export function Contact() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="flex flex-col items-center"
+        className="w-full my-auto flex flex-col items-center"
       >
         {/* Badge */}
-        <motion.div variants={itemVariants} className="mb-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#4A7C39]/30 bg-[#4A7C39]/10 dark:bg-[#78B05F]/10 text-[#4A7C39] dark:text-[#78B05F] text-xs font-semibold uppercase tracking-[0.2em] shadow-sm">
+        <motion.div variants={itemVariants} className="mb-3 sm:mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-[#4A7C39]/30 bg-[#4A7C39]/10 dark:bg-[#78B05F]/10 text-[#4A7C39] dark:text-[#78B05F] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4A7C39] dark:bg-[#78B05F] animate-pulse" />
             <span>Contact</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#4A7C39] dark:bg-[#78B05F] animate-pulse" />
@@ -139,7 +139,7 @@ export function Contact() {
         {/* Heading */}
         <motion.h2
           variants={itemVariants}
-          className="font-[family-name:var(--font-display)] text-5xl md:text-7xl font-bold tracking-tight mb-4 text-foreground"
+          className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3 sm:mb-4 text-foreground"
         >
           Let&apos;s Connect{" "}
           <span className="inline-block hover:rotate-12 transition-transform duration-300 cursor-default">
@@ -150,7 +150,7 @@ export function Contact() {
         {/* Subtitle */}
         <motion.p
           variants={itemVariants}
-          className="text-muted-foreground text-base sm:text-lg mb-12 max-w-xl mx-auto leading-relaxed"
+          className="text-muted-foreground text-sm sm:text-base mb-8 sm:mb-10 max-w-xl mx-auto leading-relaxed"
         >
           Open to internship opportunities, collaborations, or just a friendly hello!
         </motion.p>
@@ -158,7 +158,7 @@ export function Contact() {
         {/* Contact Action Cards */}
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mb-16"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full max-w-3xl mb-10 sm:mb-14"
         >
           {/* GitHub Card */}
           <motion.a

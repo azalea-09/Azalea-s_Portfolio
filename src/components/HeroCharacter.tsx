@@ -110,14 +110,14 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
 
   return (
     <div
-      className={`relative w-full h-48 md:h-56 select-none ${className}`}
+      className={`relative w-full h-36 sm:h-40 md:h-48 select-none ${className}`}
       aria-label="Interactive companion character"
     >
 
       <div className="relative w-full h-full">
 
         <div
-          className="absolute bottom-4 -translate-x-1/2 flex flex-col items-center cursor-pointer group pointer-events-auto"
+          className="absolute bottom-2 sm:bottom-4 -translate-x-1/2 flex flex-col items-center cursor-pointer group pointer-events-auto"
           style={{
             left: `${posX}%`,
             transition: transitionDuration > 0 ? `left ${transitionDuration}s linear` : "none",
@@ -147,7 +147,7 @@ export function HeroCharacter({ className = "" }: { className?: string }) {
           )}
 
 
-          <div className="relative w-32 h-32 md:w-36 md:h-36 flex items-end justify-center transition-transform group-hover:scale-110 active:scale-95 duration-200">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 flex items-end justify-center transition-transform group-hover:scale-110 active:scale-95 duration-200">
             {}
             <img
               src={getSpriteSrc()}

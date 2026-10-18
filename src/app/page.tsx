@@ -189,17 +189,17 @@ function PageInner() {
 
       <section
         id="hero"
-        className="min-h-screen flex flex-col justify-center px-6 md:px-16 pt-24 pb-28 md:pb-36 relative overflow-hidden"
+        className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 pt-20 sm:pt-24 pb-16 sm:pb-20 lg:pb-24 relative overflow-hidden"
       >
 
         <AutumnCanvas />
 
-        <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto">
+        <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center my-auto">
 
           <div className="lg:col-span-7 flex flex-col items-start">
 
             <h1
-              className="font-[family-name:var(--font-display)] text-[clamp(3.2rem,7.5vw,7rem)] font-black leading-[0.94] tracking-tight mb-5"
+              className="font-[family-name:var(--font-display)] text-[clamp(2.4rem,5.5vw,5.2rem)] font-black leading-[0.98] tracking-tight mb-3 sm:mb-4"
               style={{ color: dark ? "white" : "#1c1c1c" }}
             >
               Valentina
@@ -208,13 +208,13 @@ function PageInner() {
             </h1>
 
 
-            <div className="mb-5 min-h-[2rem] flex items-center">
+            <div className="mb-3 sm:mb-4 min-h-[1.8rem] flex items-center">
               <RoleTypewriter />
             </div>
 
 
             <p
-              className="text-base sm:text-lg max-w-xl leading-relaxed mb-8"
+              className="text-sm sm:text-base lg:text-lg max-w-xl leading-relaxed mb-6 sm:mb-7"
               style={{ color: dark ? "rgba(240,242,245,0.75)" : "rgba(28,28,28,0.75)" }}
             >
               CS Student at BINUS University — combining technology &amp; creativity to turn
@@ -222,10 +222,10 @@ function PageInner() {
             </p>
 
 
-            <div className="flex gap-4 flex-wrap items-center">
+            <div className="flex gap-3 sm:gap-4 flex-wrap items-center">
               <a
                 href="#about"
-                className="px-8 py-3.5 rounded-full bg-[#4A7C39] hover:bg-[#3D682B] text-white font-semibold text-sm hover:-translate-y-1 transition-all shadow-[0_0_24px_rgba(74,124,57,0.35)] hover:shadow-[0_0_40px_rgba(74,124,57,0.55)] flex items-center gap-2"
+                className="px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-[#4A7C39] hover:bg-[#3D682B] text-white font-semibold text-xs sm:text-sm hover:-translate-y-1 transition-all shadow-[0_0_24px_rgba(74,124,57,0.35)] hover:shadow-[0_0_40px_rgba(74,124,57,0.55)] flex items-center gap-2"
               >
                 <span>About me</span>
                 <span>↓</span>
@@ -233,7 +233,7 @@ function PageInner() {
               <a
                 href="/cv.pdf"
                 download="Valentina_Azalea_CV.pdf"
-                className="px-8 py-3.5 rounded-full font-semibold text-sm hover:-translate-y-1 transition-all flex items-center gap-2.5 group shadow-sm border border-[#4A7C39]/40 dark:border-white/15 bg-[#4A7C39]/10 dark:bg-white/5 text-foreground hover:bg-[#4A7C39] hover:text-white"
+                className="px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-semibold text-xs sm:text-sm hover:-translate-y-1 transition-all flex items-center gap-2.5 group shadow-sm border border-[#4A7C39]/40 dark:border-white/15 bg-[#4A7C39]/10 dark:bg-white/5 text-foreground hover:bg-[#4A7C39] hover:text-white"
               >
                 <svg className="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -244,9 +244,9 @@ function PageInner() {
           </div>
 
 
-          <div className="lg:col-span-5 flex justify-center lg:justify-end items-center relative w-full pt-4 lg:pt-0">
-            <div className="w-full max-w-md p-4 sm:p-6 rounded-3xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-[#25282B]/80 backdrop-blur-md relative shadow-lg">
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-widest text-muted-foreground mb-2 font-medium px-2">
+          <div className="lg:col-span-5 flex justify-center lg:justify-end items-center relative w-full pt-2 lg:pt-0">
+            <div className="w-full max-w-[320px] sm:max-w-sm lg:max-w-md p-3.5 sm:p-5 lg:p-6 rounded-3xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-[#25282B]/80 backdrop-blur-md relative shadow-lg">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5 sm:mb-2 font-medium px-1 sm:px-2">
                 <span>✦ Companion</span>
                 <span className="text-[10px] text-[#4A7C39] dark:text-[#78B05F]">Click to interact</span>
               </div>
@@ -258,23 +258,19 @@ function PageInner() {
         <motion.div
           animate={{ y: [0, 4, 0], opacity: [0.5, 0.8, 0.5] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-13 md:bottom-20 left-1/2 -translate-x-1/2 z-30 text-xs uppercase tracking-widest flex flex-col items-center gap-1 text-muted-foreground/60 pointer-events-none"
+          className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 z-30 text-xs uppercase tracking-widest flex flex-col items-center gap-1 text-muted-foreground/60 pointer-events-none"
         >
           <span>scroll</span>
         </motion.div>
+
+        <LeafTransition className="absolute bottom-0 left-0 right-0 z-20 h-20 sm:h-24 md:h-32 pointer-events-none select-none overflow-hidden" />
       </section>
 
-
-      <LeafTransition />
-
-
-      <div className="relative z-10 -mt-8">
+      <div className="relative z-10">
         <div
           className="absolute inset-0 pointer-events-none transition-colors duration-700"
           style={{
             background: dark ? "rgba(28,30,32,0.85)" : "rgba(245,240,232,0.7)",
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 48px)",
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 48px)",
           }}
         />
         <div className="relative">
