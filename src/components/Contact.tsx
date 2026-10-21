@@ -227,7 +227,7 @@ export function Contact() {
           {/* LinkedIn Card */}
           <motion.a
             variants={cardVariants}
-            href="https://www.linkedin.com/in/valentina-azalea-4b899730b/"
+            href="https://www.linkedin.com/in/valentinaazalea"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl border border-border bg-card/80 dark:bg-card/60 backdrop-blur-sm

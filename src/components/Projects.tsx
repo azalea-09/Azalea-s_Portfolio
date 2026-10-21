@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Reveal, MaskLines } from "./ScrollReveal";
 import {
-  ArrowUpRight,
   Trophy,
   BarChart3,
   BrainCircuit,
@@ -464,47 +463,20 @@ export function Projects() {
                     </p>
                   </div>
 
-                  {/* Tools & Links */}
+                  {/* Tools */}
                   <div className="pt-1">
-                    {/* Tools */}
-                    <div className="mb-2">
-                      <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">
-                        Tools &amp; Tech
-                      </p>
-                      <div className="flex flex-wrap gap-1 max-h-[36px] overflow-hidden">
-                        {project.tools.map((tool) => (
-                          <span
-                            key={tool}
-                            className="text-[9px] px-1.5 py-0.5 rounded bg-muted/70 dark:bg-muted/40 text-foreground/80 border border-border/60 font-mono"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Card Footer Link */}
-                    <div className="pt-1.5 border-t border-border/60 flex items-center justify-between">
-                      {project.githubUrl ? (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-semibold text-[#4A7C39] dark:text-[#78B05F] group-hover:gap-1.5 transition-all w-fit"
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">
+                      Tools &amp; Tech
+                    </p>
+                    <div className="flex flex-wrap gap-1 max-h-[44px] overflow-hidden">
+                      {project.tools.map((tool) => (
+                        <span
+                          key={tool}
+                          className="text-[9px] px-1.5 py-0.5 rounded bg-muted/70 dark:bg-muted/40 text-foreground/80 border border-border/60 font-mono"
                         >
-                          <span>View on GitHub</span>
-                          <ArrowUpRight size={11} />
-                        </a>
-                      ) : (
-                        <span className="text-[10px] text-muted-foreground/50">
-                          In development
+                          {tool}
                         </span>
-                      )}
-
-                      <span className="text-[9px] font-mono text-muted-foreground/50">
-                        {project.tools.length} tags
-                      </span>
+                      ))}
                     </div>
                   </div>
                 </article>
